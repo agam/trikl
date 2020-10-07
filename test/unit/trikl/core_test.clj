@@ -25,63 +25,66 @@
        [(ansi/token-stream (str sb)) styles])
      ))
 
-(+ 1 1)
+(is (=
+     (let [sb (StringBuilder.)
+           styles (t/diff-row
+                   sb
+                   0
+                   {}
+                   [t/BLANK]
+                   [(t/map->Charel {:char \y :fg [10 20 30]})])]
+       [(ansi/token-stream (str sb)) styles])
 
-(let [sb (StringBuilder.)
-      styles (t/diff-row
-              sb
-              0
-              {}
-              [t/BLANK]
-              [(t/map->Charel {:char \y :fg [10 20 30]})])]
-  [(ansi/token-stream (str sb)) styles])
-[[{:row 1, :col 1}
-  {:foreground [:rgb 10 20 30]}
-  "y"]
- {:char \y, :fg [10 20 30], :bg nil}]
+     ;; Expected
+     [[nil
+       {:foreground [:rgb 10 20 30]}
+       "y"]
+      {:char \y, :fg [10 20 30], :bg nil}]))
 
-(let [sb (StringBuilder.)
-      styles (t/diff-row
-              sb
-              0
-              {}
-              [t/BLANK t/BLANK]
-              [(t/map->Charel {:char \x :fg [10 20 30]})
-               (t/map->Charel {:char \y :fg [10 20 30]})])]
-  [(ansi/token-stream (str sb)) styles])
-[[{:row 1, :col 1}
-  {:foreground [:rgb 10 20 30]}
-  "xy"]
- {:char \x, :fg [10 20 30], :bg nil}]
-
-
-(let [sb (StringBuilder.)
-      styles (t/diff-row
-              sb
-              0
-              {}
-              []
-              [(t/map->Charel {:char \x :fg [10 20 30]})
-               (t/map->Charel {:char \y :fg [10 20 30]})])]
-  [(ansi/token-stream (str sb)) styles])
-
-[[{:row 1, :col 1}
-  {:foreground [:rgb 10 20 30]}
-  "xy"]
- {:char \x, :fg [10 20 30], :bg nil}]
+(is (=
+     (let [sb (StringBuilder.)
+           styles (t/diff-row
+                   sb
+                   0
+                   {}
+                   [t/BLANK t/BLANK]
+                   [(t/map->Charel {:char \x :fg [10 20 30]})
+                    (t/map->Charel {:char \y :fg [10 20 30]})])]
+       [(ansi/token-stream (str sb)) styles])
+     [[nil
+       {:foreground [:rgb 10 20 30]}
+       "xy"]
+      {:char \x, :fg [10 20 30], :bg nil}]))
 
 
+(is (=
+     (let [sb (StringBuilder.)
+           styles (t/diff-row
+                   sb
+                   0
+                   {}
+                   []
+                   [(t/map->Charel {:char \x :fg [10 20 30]})
+                    (t/map->Charel {:char \y :fg [10 20 30]})])]
+       [(ansi/token-stream (str sb)) styles])
 
-(let [sb (StringBuilder.)
-      styles (t/diff-row
-              sb
-              0
-              {}
-              [(t/map->Charel {:char \x :fg [10 20 30]})
-               (t/map->Charel {:char \y :fg [10 20 30]})]
-              [])]
-  [(ansi/token-stream (str sb)) styles])
-[[{:row 1, :col 1} "  "] {}]
+     [[{:row 1, :col 1}
+       {:foreground [:rgb 10 20 30]}
+       "xy"]
+      {:char \x, :fg [10 20 30], :bg nil}]))
+
+
+(is (=
+     (let [sb (StringBuilder.)
+           styles (t/diff-row
+                   sb
+                   0
+                   {}
+                   [(t/map->Charel {:char \x :fg [10 20 30]})
+                    (t/map->Charel {:char \y :fg [10 20 30]})]
+                   [])]
+       [(ansi/token-stream (str sb)) styles])
+     [[{:row 1, :col 1} "  "] {}]))
 
 
 (t/time-info
